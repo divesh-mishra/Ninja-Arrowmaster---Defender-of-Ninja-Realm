@@ -12,15 +12,15 @@ pygame.display.set_caption("NINJA ARROWMASTER")
 iconImg = pygame.image.load('ninja.png')
 pygame.display.set_icon(iconImg)
 
-background = pygame.image.load('Assets/sky.png').convert()
-ground = pygame.image.load('Assets/ground.png').convert()
+background = pygame.image.load('sky.png').convert()
+ground = pygame.image.load('ground.png').convert()
 # tutorial screen
 
-text_font = pygame.font.Font('Assets/font_space_n.otf', 30)
-tutorial_font = pygame.font.Font('Assets/ShortBaby-Mg2w.ttf', 40)
+text_font = pygame.font.Font('font_space_n.otf', 30)
+tutorial_font = pygame.font.Font('ShortBaby-Mg2w.ttf', 40)
 tutorial_text1 = tutorial_font.render('1) Use Space-bar to jump.', True, 32)
 tutorial_text2 = tutorial_font.render('2) Use Right key to shoot the arrow.', True, 32)
-return_button = pygame.image.load('Assets/return_button.png')
+return_button = pygame.image.load('return_button.png')
 return_rect = return_button.get_rect(center=(400, 400))
 return_text = text_font.render('RETURN', True, 32)
 return_text_rect = return_text.get_rect(center=(400, 400))
@@ -32,7 +32,7 @@ score_values_list = [0]
 if len(score_values_list) > 3:
     score_values_list.remove(min(score_values_list))
 
-score_font = pygame.font.Font('Assets/ShortBaby-Mg2w.ttf', 40)
+score_font = pygame.font.Font('ShortBaby-Mg2w.ttf', 40)
 
 
 def score_board():
@@ -42,27 +42,27 @@ def score_board():
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        player_1 = pygame.image.load('Game/Walking/pw_1.png').convert_alpha()
-        player_2 = pygame.image.load('Game/Walking/pw_2.png').convert_alpha()
-        player_3 = pygame.image.load('Game/Walking/pw_3.png').convert_alpha()
-        player_4 = pygame.image.load('Game/Walking/pw_4.png').convert_alpha()
-        player_5 = pygame.image.load('Game/Walking/pw_5.png').convert_alpha()
-        player_6 = pygame.image.load('Game/Walking/pw_6.png').convert_alpha()
-        player_7 = pygame.image.load('Game/Walking/pw_7.png').convert_alpha()
-        player_8 = pygame.image.load('Game/Walking/pw_8.png').convert_alpha()
+        player_1 = pygame.image.load('pw_1.png').convert_alpha()
+        player_2 = pygame.image.load('pw_2.png').convert_alpha()
+        player_3 = pygame.image.load('pw_3.png').convert_alpha()
+        player_4 = pygame.image.load('pw_4.png').convert_alpha()
+        player_5 = pygame.image.load('pw_5.png').convert_alpha()
+        player_6 = pygame.image.load('pw_6.png').convert_alpha()
+        player_7 = pygame.image.load('pw_7.png').convert_alpha()
+        player_8 = pygame.image.load('pw_8.png').convert_alpha()
 
         self.player_walk = [player_1, player_2, player_3, player_4, player_5, player_6, player_7, player_8]
         self.player_walk_index = 0
 
-        player_b1 = pygame.image.load('Game/Shooting/Bow4.png').convert_alpha()
-        player_b2 = pygame.image.load('Game/Shooting/Bow5.png').convert_alpha()
-        player_b3 = pygame.image.load('Game/Shooting/Bow6.png').convert_alpha()
-        player_b4 = pygame.image.load('Game/Shooting/Bow7.png').convert_alpha()
+        player_b1 = pygame.image.load('Bow4.png').convert_alpha()
+        player_b2 = pygame.image.load('Bow5.png').convert_alpha()
+        player_b3 = pygame.image.load('Bow6.png').convert_alpha()
+        player_b4 = pygame.image.load('Bow7.png').convert_alpha()
 
         self.player_bow = [player_b1, player_b2, player_b3, player_b4]
         self.player_bow_index = 0
 
-        self.jump = pygame.image.load('Game/Walking/pw_1.png').convert_alpha()
+        self.jump = pygame.image.load('pw_1.png').convert_alpha()
         self.image = self.player_walk[self.player_walk_index]
 
         self.rect = self.image.get_rect(midbottom=(100, 415))
@@ -119,7 +119,7 @@ class Player(pygame.sprite.Sprite):
 
     def draw_health_bar(self):
         # colour, (x,y,width,height), margin width
-        heart_img = pygame.image.load('Assets/heartImg.png').convert_alpha()
+        heart_img = pygame.image.load('heartImg.png').convert_alpha()
         heart_img_rect = heart_img.get_rect(topright=(30, 16))
         screen.blit(heart_img, heart_img_rect)
         pygame.draw.rect(screen, 'Red', (30, 20, self.health_bar_length, 15))
@@ -148,7 +148,7 @@ player_group.add(Player())
 class Arrow(pygame.sprite.Sprite):
     def __init__(self, arr_x, arr_y):
         super().__init__()
-        self.image = pygame.image.load('Game/Shooting/arrowimg.png').convert_alpha()
+        self.image = pygame.image.load('arrowimg.png').convert_alpha()
         self.rect = self.image.get_rect(midleft=(arr_x, arr_y))
 
     def arrow_enemy_sky_hit(self):
@@ -196,7 +196,7 @@ arrow_group = pygame.sprite.Group()
 class EnemyGround(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        enemy_ground = pygame.image.load('Assets/enemy_fire.png').convert_alpha()
+        enemy_ground = pygame.image.load('enemy_fire.png').convert_alpha()
 
         self.image = enemy_ground
         self.rect = self.image.get_rect(midbottom=(randint(950, 1000), 415))
@@ -225,7 +225,7 @@ fire_ball_group = pygame.sprite.Group()
 class FireBall(pygame.sprite.Sprite):
     def __init__(self, ball_x, ball_y):
         super().__init__(fire_ball_group)
-        fire_ball = pygame.image.load('Assets/fire_ball.png').convert_alpha()
+        fire_ball = pygame.image.load('fire_ball.png').convert_alpha()
         self.image = fire_ball
         self.rect = self.image.get_rect(center=(ball_x, ball_y))
 
@@ -252,7 +252,7 @@ enemy_sky_group = pygame.sprite.Group()
 class EnemySky(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__(enemy_sky_group)
-        self.image = pygame.image.load('Assets/enemy_thunder.png')
+        self.image = pygame.image.load('enemy_thunder.png')
         self.rect = self.image.get_rect(center=choice([(655, 110), (558, 265), (425, 200)]))
 
 
@@ -325,7 +325,7 @@ class LightBall(pygame.sprite.Sprite):
     def __init__(self, x, y) -> None:
         super().__init__(light_ball_group)
         self.started_at = frames
-        thunder_ball = pygame.image.load('Assets/thunder_ball.png').convert_alpha()
+        thunder_ball = pygame.image.load('thunder_ball.png').convert_alpha()
         self.image = thunder_ball
         self.rect = self.image.get_rect(center=(x, y))
 
@@ -390,21 +390,21 @@ while True:
     # clock.tick(60)
     while game_on == 0:
 
-        game_start_screen = pygame.image.load('Assets/sky.png').convert()
-        game_font = pygame.font.Font('Assets/font_space.ttf', 60)
-        text_font = pygame.font.Font('Assets/font_space_n.otf', 30)
+        game_start_screen = pygame.image.load('sky.png').convert()
+        game_font = pygame.font.Font('font_space.ttf', 60)
+        text_font = pygame.font.Font('font_space_n.otf', 30)
         game_start_screen_text = game_font.render('NINJA ARROWMASTER', True, 60)
         game_start_screen_text_rect = game_start_screen_text.get_rect(midtop=(400, 40))
-        green_button = pygame.image.load('Assets/Green_button.png').convert_alpha()
+        green_button = pygame.image.load('Green_button.png').convert_alpha()
         green_button_text = text_font.render('PLAY', True, 32)
         green_button_text_rect = green_button_text.get_rect(center=(250, 250))
         green_rect = green_button.get_rect(center=(250, 250))
-        red_button = pygame.image.load('Assets/Red_button.png').convert_alpha()
+        red_button = pygame.image.load('Red_button.png').convert_alpha()
         red_button_text = text_font.render('TUTORIAL', True, 32)
         red_button_text_rect = red_button_text.get_rect(center=(550, 250))
         red_rect = red_button.get_rect(center=(550, 250))
-        player_character = pygame.image.load('Assets/tile324.png')
-        enemy_character = pygame.image.load('Assets/enemy_fire.png')
+        player_character = pygame.image.load('tile324.png')
+        enemy_character = pygame.image.load('enemy_fire.png')
 
         screen.blit(game_start_screen, (0, 0))
         screen.blit(game_start_screen_text, game_start_screen_text_rect)
