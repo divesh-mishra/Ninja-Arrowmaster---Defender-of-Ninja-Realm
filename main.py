@@ -484,4 +484,58 @@ while True:
                 enemy_ground_group.add(EnemyGround())
 
         pygame.display.update()
+    while game_on == 2:
+        screen.blit(game_start_screen, (0, 0))
+        screen.blit(game_start_screen_text, game_start_screen_text_rect)
+        screen.blit(ground, (0, 465))
+        screen.blit(tutorial_text1, (50, 200))
+        screen.blit(tutorial_text2, (50, 300))
+        screen.blit(return_button, return_rect)
+        screen.blit(return_text, return_text_rect)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = pygame.mouse.get_pos()
+                if return_rect.collidepoint(position):
+                    game_on = 0
+
+        pygame.display.update()
+
+    while game_on == 3:
+        game_over_surface_text = game_font.render('GAME OVER', True, 'Yellow', 40)
+        game_over_surface_text_rect = game_over_surface_text.get_rect(midtop=(400, 100))
+        your_score = score_font.render(f'Your Score:{score_var}', True, 32)
+        your_score_rect = your_score.get_rect(topleft=(200, 250))
+        high_score = score_font.render(f'High Score:{max(score_values_list)}', True, 32)
+        high_score_rect = high_score.get_rect(topright=(600, 300))
+        screen.blit(game_start_screen, (0, 0))
+        screen.blit(game_start_screen_text, game_start_screen_text_rect)
+        screen.blit(ground, (0, 465))
+        screen.blit(game_over_surface_text, game_over_surface_text_rect)
+        screen.blit(your_score, your_score_rect)
+        screen.blit(high_score, high_score_rect)
+        screen.blit(return_button, return_rect)
+        screen.blit(return_text, return_text_rect)
+
+        pygame.display.update()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = pygame.mouse.get_pos()
+                # if 325 < event.pos[0] < 475 and 375 < event.pos[1] < 425:
+                if return_rect.collidepoint(position):
+                    score_var = 0
+                    # frames = 0
+                    # player.instantaneous_health = 1200
+                    game_on = 0
+                    pygame.display.update()
+
+    pygame.display.update()
+    pygame.display.flip()
 
