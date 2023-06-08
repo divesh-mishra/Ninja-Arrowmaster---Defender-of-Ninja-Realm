@@ -367,3 +367,121 @@ class LightBall(pygame.sprite.Sprite):
 
 
 light_ball = LightBall(1000, 1000)
+
+# clock and timers
+clock = pygame.time.Clock()
+arrow_shoot_delay_time = 800
+time_at_last_shot = 0
+
+# enemy ground timer
+enemy_ground_timer = pygame.USEREVENT + 1
+
+enemy_ground_timer_var = 8000
+if 20 < score_var < 40:
+    enemy_ground_timer_var = 6000
+elif score_var >= 40:
+    enemy_ground_timer_var = 5000
+pygame.time.set_timer(enemy_ground_timer, enemy_ground_timer_var)
+
+# Game State
+game_on = 0
+
+while True:
+    # clock.tick(60)
+    while game_on == 0:
+
+        game_start_screen = pygame.image.load('Assets/sky.png').convert()
+        game_font = pygame.font.Font('Assets/font_space.ttf', 60)
+        text_font = pygame.font.Font('Assets/font_space_n.otf', 30)
+        game_start_screen_text = game_font.render('NINJA ARROWMASTER', True, 60)
+        game_start_screen_text_rect = game_start_screen_text.get_rect(midtop=(400, 40))
+        green_button = pygame.image.load('Assets/Green_button.png').convert_alpha()
+        green_button_text = text_font.render('PLAY', True, 32)
+        green_button_text_rect = green_button_text.get_rect(center=(250, 250))
+        green_rect = green_button.get_rect(center=(250, 250))
+        red_button = pygame.image.load('Assets/Red_button.png').convert_alpha()
+        red_button_text = text_font.render('TUTORIAL', True, 32)
+        red_button_text_rect = red_button_text.get_rect(center=(550, 250))
+        red_rect = red_button.get_rect(center=(550, 250))
+        player_character = pygame.image.load('Assets/tile324.png')
+        enemy_character = pygame.image.load('Assets/enemy_fire.png')
+
+        screen.blit(game_start_screen, (0, 0))
+        screen.blit(game_start_screen_text, game_start_screen_text_rect)
+        screen.blit(ground, (0, 465))
+        screen.blit(red_button, red_rect)
+        screen.blit(green_button, green_rect)
+        screen.blit(green_button_text, green_button_text_rect)
+        screen.blit(red_button_text, red_button_text_rect)
+        screen.blit(player_character, (200, 405))
+        screen.blit(enemy_character, (400, 390))
+
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                position = pygame.mouse.get_pos()
+                if green_rect.collidepoint(position):
+                    game_on = 1
+                if red_rect.collidepoint(position):
+                    game_on = 2
+                # if 175 < event.pos[0] < 325 and 226 < event.pos[1] < 274:
+                #     game_on = 1
+                # elif 475 < event.pos[0] < 625 and 226 < event.pos[1] < 274:
+                #     game_on = 2
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    game_on = 1
+
+        pygame.display.update()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+    if game_on == 1:
+        # 60 fps (max)
+        clock.tick(60)
+        frames += 1
+        screen.fill('red')
+        screen.blit(background, (0, 0))
+        screen.blit(ground, (0, 415))
+
+        score_board()
+
+        player_group.draw(screen)
+        player_group.update()
+
+        arrow_group.draw(screen)
+        arrow_group.update()
+
+        enemy_ground_group.draw(screen)
+        enemy_ground_group.update()
+
+        fire_ball_group.draw(screen)
+        fire_ball_group.update()
+
+        enemy_sky_group.draw(screen)
+        enemy_sky_group.update()
+
+        light_ball_group.draw(screen)
+        light_ball_group.update()
+
+        # Event loop
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            time_now = pygame.time.get_ticks()
+
+            if time_now - time_at_last_shot >= arrow_shoot_delay_time:
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RIGHT:
+                        arrow_group.add(player.generate_arrow())
+                        time_at_last_shot = time_now
+
+            if event.type == enemy_ground_timer:
+                enemy_ground_group.add(EnemyGround())
+
+        pygame.display.update()
+
