@@ -14,8 +14,8 @@ pygame.display.set_icon(iconImg)
 
 background = pygame.image.load('sky.png').convert()
 ground = pygame.image.load('ground.png').convert()
-# tutorial screen
 
+# tutorial screen
 text_font = pygame.font.Font('font_space_n.otf', 30)
 tutorial_font = pygame.font.Font('ShortBaby-Mg2w.ttf', 40)
 tutorial_text1 = tutorial_font.render('1) Use Space-bar to jump.', True, 32)
@@ -25,20 +25,22 @@ return_rect = return_button.get_rect(center=(400, 400))
 return_text = text_font.render('RETURN', True, 32)
 return_text_rect = return_text.get_rect(center=(400, 400))
 
-# Score
+# Related to Score Boards
 score_var = 0
+# storing values in list so that we can get high score
 score_values_list = [0]
-# score_max = 0
+
 if len(score_values_list) > 3:
     score_values_list.remove(min(score_values_list))
 
 score_font = pygame.font.Font('ShortBaby-Mg2w.ttf', 40)
 
-
+# function to draw score board
 def score_board():
     score_surf = score_font.render(f'Score:{score_var}', True, 32)
     screen.blit(score_surf, (370, 10))
     
+# Player class, contains all its abilities
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -68,7 +70,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(midbottom=(100, 415))
         self.gravity = 0
 
-        self.instantaneous_health = 200
+        self.instantaneous_health = 1200
         self.max_health = 1200
         self.health_bar_length = 300
         self.heath_bar_ratio = 4
@@ -77,7 +79,8 @@ class Player(pygame.sprite.Sprite):
         key = pygame.key.get_pressed()
         if key[pygame.K_SPACE] and self.rect.bottom >= 415:
             self.gravity = -25
-
+            
+    # gravity on player
     def act_gravity(self):
         global arrow_pos_y
         self.gravity += 1
@@ -87,56 +90,76 @@ class Player(pygame.sprite.Sprite):
         if self.rect.bottom >= 415:
             self.rect.bottom = 415
             self.gravity = 0
-
+    
+    # player animation in different states
     def player_anim(self):
+        # while player is shooting
         key = pygame.key.get_pressed()
         if key[pygame.K_RIGHT]:
             self.player_bow_index += 0.1
             if self.player_bow_index >= len(self.player_bow):
                 self.player_bow_index = 0
             self.image = self.player_bow[int(self.player_bow_index)]
-
+        
         else:
+            # while in air or jump
             if self.rect.bottom < 300:
                 self.image = self.jump
-
+            
+            # while on ground that is walking
             else:
                 self.player_walk_index += 0.1
                 if self.player_walk_index >= len(self.player_walk):
                     self.player_walk_index = 0
                 self.image = self.player_walk[int(self.player_walk_index)]
 
+    # function to generate arrow when called in event loop
     def generate_arrow(self):
-
         return Arrow(self.rect.centerx, arrow_pos_y)
 
-    def health_decrease(self, amt):
+    # function to decrease health of player takes value to be reduced as arguement
+    def health_decrease(self, amnt):
         if self.instantaneous_health > 0:
-            self.instantaneous_health -= amt
+            self.instantaneous_health -= amnt
         if self.instantaneous_health < 0:
             self.instantaneous_health = 0
-        pygame.display.update()
 
+    # function to draw health bar
     def draw_health_bar(self):
-        # colour, (x,y,width,height), margin width
         heart_img = pygame.image.load('heartImg.png').convert_alpha()
         heart_img_rect = heart_img.get_rect(topright=(30, 16))
         screen.blit(heart_img, heart_img_rect)
+        
+        # rect used and given (screen, colour, (x,y,width,height))
         pygame.draw.rect(screen, 'Red', (30, 20, self.health_bar_length, 15))
         pygame.draw.rect(screen, 'Green', (30, 20, self.instantaneous_health / self.heath_bar_ratio, 15))
-
+        
     def update(self):
         global score_var
         global game_on
-        global frames
+        
         self.player_jump()
         self.act_gravity()
         self.player_anim()
-        # self.score_board()
         self.draw_health_bar()
+        
+        # For Game Over
         if self.instantaneous_health == 0:
-            # frames = 0
+            # here killing enemies if they remained in screen after zero health
+            # so that they come from out of the screen (right side) after restart
+            l = []
+            
+            for e in enemy_ground_group.spritedict:
+                if e.rect.left > 0:
+                    l.append(e)
+                    
+            for e in l:
+                e.kill()
+                
+            # appending score value
             score_values_list.append(score_var)
+            
+            # refilled health for next game restart
             self.instantaneous_health = 1200
             game_on = 3
 
@@ -145,6 +168,7 @@ player = Player()
 player_group = pygame.sprite.GroupSingle()
 player_group.add(Player())    
 
+# Arrow class contains its hit functions with enemies
 class Arrow(pygame.sprite.Sprite):
     def __init__(self, arr_x, arr_y):
         super().__init__()
@@ -153,7 +177,7 @@ class Arrow(pygame.sprite.Sprite):
 
     def arrow_enemy_sky_hit(self):
         global score_var
-        if enemy_sky.rect.collidepoint(self.rect.topright):
+        if enemy_sky.rect.collidepoint(self.rect.center):
             score_var += 2
 
             if enemy_sky.rect.center == (655, 110):
@@ -161,6 +185,7 @@ class Arrow(pygame.sprite.Sprite):
 
             elif enemy_sky.rect.center == (558, 265):
                 enemy_sky.rect.center = choice([(655, 110), (425, 170)])
+                
             elif enemy_sky.rect.center == (425, 170):
                 enemy_sky.rect.center = choice([(655, 110), (558, 265)])
             self.kill()
@@ -169,29 +194,25 @@ class Arrow(pygame.sprite.Sprite):
     def arrow_enemy_ground_hit(self):
         global score_var
         l = []
-        for r in enemy_ground_group.spritedict:
-            if r.rect.collidepoint(self.rect.center):
+        for e in enemy_ground_group.spritedict:
+            if e.rect.collidepoint(self.rect.center):
                 score_var += 1
-                
-
                 self.kill()
-                l.append(r)
-        for i in l:
-            i.kill()
+                l.append(e)
+        for e in l:
+            e.kill()
 
     def update(self):
         self.arrow_enemy_sky_hit()
         self.arrow_enemy_ground_hit()
         self.rect.left += 5
-
+        
+        # kill arrow if arrow goes out of screen without hitting
         if self.rect.left >= 1000:
             self.kill()
 
 
 arrow_group = pygame.sprite.Group()
-
-
-# arrow=Arrow(player.rect.centerx,player.rect.centery)
 
 class EnemyGround(pygame.sprite.Sprite):
     def __init__(self):
@@ -214,6 +235,8 @@ class EnemyGround(pygame.sprite.Sprite):
         self.rect.left -= 2
         if self.rect.right <= -50:
             self.kill()
+            
+        # used to control fire ball generation frequency
         if (frames / 60) % 2 == 0:
             self.generate_fire_ball()
 
@@ -253,7 +276,7 @@ class EnemySky(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__(enemy_sky_group)
         self.image = pygame.image.load('enemy_thunder.png')
-        self.rect = self.image.get_rect(center=choice([(655, 110), (558, 265), (425, 200)]))
+        self.rect = self.image.get_rect(center=choice([(655, 110), (558, 265), (425, 170)]))
 
 
 enemy_sky = EnemySky()
@@ -379,7 +402,6 @@ light_ball_path_3 = [(394, 143), (391, 145), (390, 146), (388, 147), (385, 150),
 light_ball_group = pygame.sprite.Group()
 
 # frames: used for Lightball 
-
 frames = 0
 
 
@@ -451,9 +473,9 @@ game_on = 0
 while True:
     # clock.tick(60)
     
-    while game_on == 0:
+    if game_on == 0:
         
-#         This is introductory screen
+        # This is introductory screen
 
         game_start_screen = pygame.image.load('sky.png').convert()
         game_font = pygame.font.Font('font_space.ttf', 60)
@@ -488,20 +510,17 @@ while True:
                     game_on = 1
                 if red_rect.collidepoint(position):
                     game_on = 2
-                # if 175 < event.pos[0] < 325 and 226 < event.pos[1] < 274:
-                #     game_on = 1
-                # elif 475 < event.pos[0] < 625 and 226 < event.pos[1] < 274:
-                #     game_on = 2
+                
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     game_on = 1
-
-        pygame.display.update()
-        for event in pygame.event.get():
+                    
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-
+       
+        pygame.display.update()
+       
     
     if game_on == 1:
         # 60 fps (max)
@@ -550,7 +569,9 @@ while True:
                 enemy_ground_group.add(EnemyGround())
 
         pygame.display.update()
-    while game_on == 2:
+        
+        
+    if game_on == 2:
         screen.blit(game_start_screen, (0, 0))
         screen.blit(game_start_screen_text, game_start_screen_text_rect)
         screen.blit(ground, (0, 465))
@@ -570,8 +591,8 @@ while True:
 
         pygame.display.update()
 
-    while game_on == 3:
-        game_over_surface_text = game_font.render('GAME OVER', True, 'Yellow', 40)
+    if game_on == 3:
+        game_over_surface_text = game_font.render('GAME OVER', True, 'Yellow')
         game_over_surface_text_rect = game_over_surface_text.get_rect(midtop=(400, 100))
         your_score = score_font.render(f'Your Score:{score_var}', True, 32)
         your_score_rect = your_score.get_rect(topleft=(200, 250))
@@ -592,6 +613,7 @@ while True:
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
+                
             if event.type == pygame.MOUSEBUTTONDOWN:
                 position = pygame.mouse.get_pos()
                 # if 325 < event.pos[0] < 475 and 375 < event.pos[1] < 425:
